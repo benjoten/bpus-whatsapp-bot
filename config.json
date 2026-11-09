@@ -1,0 +1,7 @@
+{
+  "liveApiUrl": "https://bpus.gt.tc/acc/api/whatsapp_webhook.php",
+  "apiSecret": "bpus_wa_secret_key_2026",
+  "targetGroupName": "",
+  "botPrefixes": ["/+", "+", "/-", "-", "?", "/balance", "/summary", "/events", "/help", "/menu", "chanda", "khoroch", "hisab"]
+}
+
