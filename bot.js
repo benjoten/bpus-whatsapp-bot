@@ -173,12 +173,32 @@ app.listen(PORT, () => {
     }, 10 * 60 * 1000);
 });
 
-// 4. Initialize WhatsApp Web Client
+// 4. Resolve Chrome / Chromium Path
+let chromeExecutable = process.env.PUPPETEER_EXECUTABLE_PATH;
+if (!chromeExecutable || !fs.existsSync(chromeExecutable)) {
+    const candidates = [
+        '/usr/bin/google-chrome',
+        '/usr/bin/google-chrome-stable',
+        '/usr/bin/chromium',
+        '/usr/bin/chromium-browser'
+    ];
+    for (const c of candidates) {
+        if (fs.existsSync(c)) {
+            chromeExecutable = c;
+            break;
+        }
+    }
+}
+if (chromeExecutable) {
+    addLog(`🔍 Using Browser binary: ${chromeExecutable}`);
+}
+
+// Initialize WhatsApp Web Client
 const client = new Client({
     authStrategy: new LocalAuth({ dataPath: path.join(__dirname, '.wwebjs_auth') }),
     puppeteer: {
         headless: true,
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+        executablePath: chromeExecutable || undefined,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
