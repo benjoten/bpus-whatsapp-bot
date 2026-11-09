@@ -1,24 +1,24 @@
-FROM node:20-bullseye-slim
+FROM node:20-bullseye
 
-# Install Chromium & fonts needed by Puppeteer / whatsapp-web.js
-RUN apt-get update && apt-get install -y \
-    chromium \
-    fonts-freefont-ttf \
-    --no-install-recommends \
+# Install Official Google Chrome Stable & Required Dependencies
+RUN apt-get update && apt-get install -y wget gnupg ca-certificates \
+    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/googlechrome-linux-keyring.gpg \
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/googlechrome-linux-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable fonts-freefont-ttf libxss1 --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable \
     PORT=3000
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install --production
+RUN npm install
 
 COPY . .
 
 EXPOSE 3000
 
 CMD ["node", "bot.js"]
-

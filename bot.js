@@ -163,6 +163,14 @@ app.get('/health', (req, res) => {
 app.listen(PORT, () => {
     addLog(`🌐 Web Dashboard & Healthcheck running on port ${PORT}`);
     addLog(`📡 Target API Endpoint: ${config.liveApiUrl}`);
+
+    // Self keep-alive ping every 10 minutes to prevent Render Free tier from sleeping
+    const selfUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
+    setInterval(() => {
+        axios.get(`${selfUrl}/health`)
+            .then(() => console.log(`💓 [Keep-Alive] Pinged ${selfUrl}/health successfully.`))
+            .catch(() => {});
+    }, 10 * 60 * 1000);
 });
 
 // 4. Initialize WhatsApp Web Client
